@@ -2,7 +2,7 @@ name: Full Disposable Pipeline
 
 on:
   schedule:
-    - cron: "30 14 * * *"  # Daily at 02:30 PM UTC (adjust as needed)
+    - cron: "30 14 * * *" # Daily at 02:30 PM UTC (adjust as needed)
   workflow_dispatch:
 
 jobs:
@@ -10,33 +10,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
 
-    - name: Insert Food Sales
-      env:
-        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      run: |
-        python insert_food_sales.py
+      - name: Insert Food Sales
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          python insert_food_sales.py
 
-    - name: Wait for Supabase trigger to refresh view
-      run: |
-        echo "Waiting for trigger to refresh materialized view..."
-        # sleep 60 seconds
+      - name: Wait for Supabase trigger to refresh disposable_daily_usage
+        run: |
+          echo "Waiting for trigger to refresh trigger to refresh disposable_daily_usage"
+          sleep 60
 
-    - name: Log Disposable Usage and Update Stock
-      env:
-        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      run: |
-        python disposable_logger.py
+      - name: Log Disposable Usage and Update Stock
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          python disposable_logger.py
