@@ -7,11 +7,6 @@ from supabase import create_client, Client
 load_dotenv()  # loading variables from .env
 
 
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
-supabase: Client = create_client(url, key)
-
-
 # ========== CONFIG ==========
 DATA_FOLDER = "data"
 CLEAN_DATA_FOLDER = "clean_data"
@@ -51,8 +46,14 @@ merged_df = sales_df.merge(food_items_df, on="batch_code", how="inner")
 
 records = merged_df[["id", "quantity_sold","date"]].rename(columns={"id": "food_item_id"}).to_dict("records")
 
+# Prepares the clean, transformed, and correctly mapped data so it can be inserted row-by-row into the food_sales table in Supabase.
 
-for row in records:
-    supabase.table("food_sales").insert(row).execute()
+# [
+#     {"food_item_id": 12, "quantity_sold": 500, "date": "2025-07-14"},
+#     {"food_item_id": 15, "quantity_sold": 300, "date": "2025-07-14"},
+#     ...
+# ]
+
+supabase.table("food_sales").insert(records).execute()
 
 print("✅ Data cleaned, matched, and uploaded successfully.")

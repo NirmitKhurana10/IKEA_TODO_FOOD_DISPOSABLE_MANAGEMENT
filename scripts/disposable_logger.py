@@ -1,5 +1,6 @@
 from datetime import timedelta, date
-from supabase import create_client, Client
+from supabase import create_client
+import time
 from dotenv import load_dotenv
 import os
 
@@ -10,8 +11,10 @@ url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 supabase = create_client(url, key)
 
+time.sleep(60)
+
 usage = supabase.table("disposable_daily_usage").select("*").execute().data
-print(usage)
+# print(usage)
 
 yesterday = date.today() - timedelta(days=1)
 
