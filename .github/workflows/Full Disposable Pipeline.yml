@@ -27,7 +27,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          python insert_food_sales.py
+          python scripts/insert_food_sales.py
 
       - name: Wait for Supabase trigger to refresh disposable_daily_usage
         run: |
@@ -39,7 +39,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          python disposable_logger.py
+          python scripts/disposable_logger.py
 
       - name: Wait before refreshing final order view
         run: |
@@ -51,4 +51,4 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          python refresh_final_order_view.py
+          python scripts/refresh_final_order_view.py
