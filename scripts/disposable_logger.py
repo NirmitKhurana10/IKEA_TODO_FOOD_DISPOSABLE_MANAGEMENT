@@ -34,3 +34,4 @@ for entry in usage:
 # Executing SQL Stored procedure to deduct stock
     
 supabase.rpc("update_stock_after_sales").execute()
+

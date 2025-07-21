@@ -40,3 +40,16 @@ jobs:
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
           python disposable_logger.py
+
+
+      - name: Wait before refreshing final order view
+          run: |
+            echo "Waiting before refreshing final materialized view..."
+            sleep 5
+
+        - name: Refresh Final Order View
+          env:
+            SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+            SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          run: |
+            python refresh_final_order_view.py
