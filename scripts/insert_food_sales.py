@@ -3,22 +3,35 @@ from dotenv import load_dotenv
 import pandas as pd
 from datetime import datetime, timedelta
 from supabase import create_client, Client
+from io import BytesIO
+
 
 load_dotenv()  # loading variables from .env
 
 
 # ========== CONFIG ==========
-DATA_FOLDER = "data"
-CLEAN_DATA_FOLDER = "clean_data"
-FILE_DATE = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
-INPUT_FILE = f"../{DATA_FOLDER}/{FILE_DATE}.xlsx"
-CLEANED_FILE = f"../{CLEAN_DATA_FOLDER}/{FILE_DATE}_cleaned.csv"
+# DATA_FOLDER = "data"
+# CLEAN_DATA_FOLDER = "clean_data"
+# FILE_DATE = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
+# INPUT_FILE = f"../{DATA_FOLDER}/{FILE_DATE}.xlsx"
+# CLEANED_FILE = f"../{CLEAN_DATA_FOLDER}/{FILE_DATE}_cleaned.csv"
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+download_bucket = os.environ.get("SUPABASE_BUCKET")
+upload_bucket = os.environ.get("CLEAN_BUCKET")
+
+FILE_DATE = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+raw_file_response = supabase.storage.from_("food-sales-files").download(RAW_FILENAME)
+raw_bytes = BytesIO(raw_file_response)
+
 # ========== STEP 1: CLEAN DATA ==========
+
+
+
 df = pd.read_excel(INPUT_FILE).dropna().drop_duplicates()
 df[['batch_code', 'item_name']] = df['Item'].str.split(' - ', n=1, expand=True)
 
