@@ -52,3 +52,136 @@ jobs:
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
           python scripts/refresh_final_order_view.py
+
+# ⸻
+
+# 🔧 name: Full Disposable Pipeline
+
+# This names your GitHub Actions workflow. When it runs (on a schedule or manually), you’ll see this name in GitHub’s “Actions” tab.
+
+# ⸻
+
+# ⏰ on: — What triggers this pipeline?
+
+# on:
+#   schedule:
+#     - cron: "30 14 * * *"  # Daily at 2:30 PM UTC
+#   workflow_dispatch:
+
+# You are telling GitHub:
+# 	•	schedule: Run automatically every day at 2:30 PM UTC
+# 	•	This is 10:30 AM Eastern Time (Canada), if you’re in EDT (UTC-4)
+# 	•	workflow_dispatch: Also allow running this manually from the GitHub Actions tab
+
+# ⸻
+
+# 🚀 jobs: — Define what this pipeline should do
+
+# jobs:
+#   full-pipeline:
+#     runs-on: ubuntu-latest
+
+# This defines one job named full-pipeline and says:
+# 	•	Run on a Linux-based server (ubuntu-latest) provided by GitHub
+
+# ⸻
+
+# 🧱 steps: — Step-by-step tasks the job will perform
+
+# ⸻
+
+# 1. ✅ Checkout the code
+
+# - name: Checkout repo
+#   uses: actions/checkout@v3
+
+# This step downloads your GitHub repository code onto the virtual machine so it can run Python files from it.
+
+# ⸻
+
+# 2. 🐍 Set up Python
+
+# - name: Set up Python
+#   uses: actions/setup-python@v4
+#   with:
+#     python-version: '3.11'
+
+# This installs Python 3.11 in the environment so your scripts can run.
+
+# ⸻
+
+# 3. 📦 Install required libraries
+
+# - name: Install dependencies
+#   run: |
+#     pip install -r requirements.txt
+
+# This installs the packages (like supabase, python-dotenv) listed in your requirements.txt file.
+
+# ⸻
+
+# 4. 🍽️ Run the insert_food_sales.py script
+
+# - name: Insert Food Sales
+#   env:
+#     SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+#     SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+#   run: |
+#     python insert_food_sales.py
+
+# 	•	This runs your first script that:
+# 	•	Reads Power BI Excel data
+# 	•	Cleans and maps food item sales
+# 	•	Inserts them into the food_sales table in Supabase
+# 	•	env: Supplies your Supabase credentials securely from GitHub secrets
+
+# ⸻
+
+# 5. ⏳ Wait for the trigger to finish
+
+# - name: Wait for Supabase trigger to refresh view
+#   run: |
+#     echo "Waiting for trigger to refresh materialized view..."
+#     # sleep 60 seconds
+
+# This is a pause step to let Supabase’s trigger finish refreshing the disposable_daily_usage materialized view after the food sales insert.
+# 	•	Currently, the sleep 60 line is commented (#) — it won’t pause unless you uncomment it.
+# 	•	You should uncomment it so the next script doesn’t run before the view is refreshed.
+
+# ✅ Fix it like this:
+
+# run: |
+#   echo "Waiting for trigger to refresh materialized view..."
+#   sleep 60
+
+# ⸻
+
+# 6. 📦 Log usage + Update stock
+
+# - name: Log Disposable Usage and Update Stock
+#   env:
+#     SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+#     SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+#   run: |
+#     python disposable_logger.py
+
+# This step:
+# 	•	Pulls from the disposable_daily_usage materialized view
+# 	•	Inserts each day’s usage into disposable_usage_log
+# 	•	Calls your stored procedure update_stock_after_sales() to update inventory
+
+# It finishes the chain.
+
+# ⸻
+
+# 🔐 env → Supabase secrets
+
+# In both scripts, you’re using:
+
+# env:
+#   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+#   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+# These secrets must be added in GitHub → Repo Settings → Secrets and Variables → Actions
+# This keeps your keys secure and out of code.
+
