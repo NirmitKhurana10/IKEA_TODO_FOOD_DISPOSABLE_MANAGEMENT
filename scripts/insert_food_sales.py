@@ -25,14 +25,14 @@ upload_bucket = os.environ.get("CLEAN_BUCKET")
 
 FILE_DATE = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
 
-raw_file_response = supabase.storage.from_("food-sales-files").download(RAW_FILENAME)
-raw_bytes = BytesIO(raw_file_response)
+INPUT_FILE_NAME = f"{FILE_DATE}.xlsx"
+OUTPUT_FILE_NAME = f"{FILE_DATE}_cleaned.csv"
+
+raw_file = supabase.storage.from_(download_bucket).download(INPUT_FILE_NAME)
 
 # ========== STEP 1: CLEAN DATA ==========
 
-
-
-df = pd.read_excel(INPUT_FILE).dropna().drop_duplicates()
+df = pd.read_excel(raw_file).dropna().drop_duplicates()
 df[['batch_code', 'item_name']] = df['Item'].str.split(' - ', n=1, expand=True)
 
 df = df[['batch_code', 'item_name', 'Quantity']]
@@ -41,7 +41,7 @@ df.rename(columns={'Quantity': 'quantity_sold'}, inplace=True)
 
 df['date'] = FILE_DATE  # Add prev date
 
-df.to_csv(CLEANED_FILE, index=False)
+df.to_csv(OUTPUT_FILE_NAME, index=False)
 
 print("✅ Data cleaned.")
 
@@ -54,7 +54,7 @@ print("✅ Data loaded from Database")
 
 
 # ========== STEP 3: MERGE & INSERT TO Supabase ==========
-sales_df = pd.read_csv(CLEANED_FILE)
+sales_df = pd.read_csv(OUTPUT_FILE_NAME)
 merged_df = sales_df.merge(food_items_df, on="batch_code", how="inner")
 
 records = merged_df[["id", "quantity_sold","date"]].rename(columns={"id": "food_item_id"}).to_dict("records")
