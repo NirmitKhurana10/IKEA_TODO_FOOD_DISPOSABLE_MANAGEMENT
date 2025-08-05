@@ -20,7 +20,7 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-download_bucket = os.environ.get("SUPABASE_BUCKET")
+download_bucket = os.environ.get("FOOD_SALES_BUCKET")
 upload_bucket = os.environ.get("CLEAN_BUCKET")
 
 FILE_DATE = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
