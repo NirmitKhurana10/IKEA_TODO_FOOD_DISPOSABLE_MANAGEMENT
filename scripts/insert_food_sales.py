@@ -20,8 +20,8 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-download_bucket = os.environ.get("FOOD_SALES_BUCKET")
-upload_bucket = os.environ.get("CLEAN_BUCKET")
+download_bucket = "daily-sales"
+upload_bucket = "clean-food-sales"
 
 FILE_DATE = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
 
@@ -43,14 +43,14 @@ df['date'] = FILE_DATE  # Add prev date
 
 df.to_csv(OUTPUT_FILE_NAME, index=False)
 
-print("✅ Data cleaned.")
+print("✅ Data cleaned. - insert_food_sales.py:46")
 
 # ========== STEP 2: LOAD FOOD ITEM IDS ==========
 food_items = supabase.table("food_items").select("id, batch_code").execute().data
 food_items_df = pd.DataFrame(food_items)
 food_items_df["batch_code"] = food_items_df["batch_code"].astype(int)
 
-print("✅ Data loaded from Database")
+print("✅ Data loaded from Database - insert_food_sales.py:53")
 
 
 # ========== STEP 3: MERGE & INSERT TO Supabase ==========
@@ -69,4 +69,4 @@ records = merged_df[["id", "quantity_sold","date"]].rename(columns={"id": "food_
 
 supabase.table("food_sales").insert(records).execute()
 
-print("✅ Data cleaned, matched, and uploaded successfully.")
+print("✅ Data cleaned, matched, and uploaded successfully. - insert_food_sales.py:72")

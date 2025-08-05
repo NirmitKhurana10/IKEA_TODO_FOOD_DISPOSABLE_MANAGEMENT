@@ -26,8 +26,8 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-          FOOD_SALES_BUCKET: ${{ secrets.FOOD_SALES_BUCKET}}
-          CLEAN_BUCKET: ${{ secrets.CLEAN_BUCKET}}
+          # FOOD_SALES_BUCKET: ${{ secrets.FOOD_SALES_BUCKET }}
+          # CLEAN_BUCKET: ${{ secrets.CLEAN_BUCKET }}
         run: |
           python scripts/insert_food_sales.py
 
