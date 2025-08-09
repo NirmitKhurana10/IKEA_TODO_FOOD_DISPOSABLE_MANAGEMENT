@@ -69,10 +69,6 @@ records = upload_df.to_dict("records")  # For inserting to Supabase
 #     ...
 # ]
 
-supabase.table("food_sales").insert(records).execute()
-
-print("✅ Data cleaned, matched, and uploaded successfully. - insert_food_sales.py:74")
-
 
 # Step 4: Upload cleaned CSV to Storage
 csv_buffer = BytesIO()
@@ -85,4 +81,12 @@ supabase.storage.from_(upload_bucket).upload(
     file_options={"content-type": "text/csv"}
 )
 
-print("✅ Clean CSV uploaded to Supabase Storage - insert_food_sales.py:88")
+print("✅ Clean CSV uploaded to Supabase Storage - insert_food_sales.py:84")
+
+####################################################################################################################
+
+
+supabase.table("food_sales").insert(records).execute()
+
+print("✅ Data cleaned, matched, and uploaded successfully. - insert_food_sales.py:91")
+
