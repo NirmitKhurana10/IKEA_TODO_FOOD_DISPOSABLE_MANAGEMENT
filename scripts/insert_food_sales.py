@@ -57,7 +57,9 @@ print("✅ Data loaded from Database - insert_food_sales.py:53")
 sales_df = pd.read_csv(OUTPUT_FILE_NAME)
 merged_df = sales_df.merge(food_items_df, on="batch_code", how="inner")
 
-records = merged_df[["id", "quantity_sold","date"]].rename(columns={"id": "food_item_id"}).to_dict("records")
+upload_df = merged_df[["id", "quantity_sold", "date"]].rename(columns={"id": "food_item_id"})
+
+records = upload_df.to_dict("records")  # For inserting to Supabase
 
 # Prepares the clean, transformed, and correctly mapped data so it can be inserted row-by-row into the food_sales table in Supabase.
 
@@ -69,4 +71,18 @@ records = merged_df[["id", "quantity_sold","date"]].rename(columns={"id": "food_
 
 supabase.table("food_sales").insert(records).execute()
 
-print("✅ Data cleaned, matched, and uploaded successfully. - insert_food_sales.py:72")
+print("✅ Data cleaned, matched, and uploaded successfully. - insert_food_sales.py:74")
+
+
+# Step 4: Upload cleaned CSV to Storage
+csv_buffer = BytesIO()
+upload_df.to_csv(csv_buffer, index=False)
+csv_buffer.seek(0)
+
+supabase.storage.from_(upload_bucket).upload(
+    OUTPUT_FILE_NAME,
+    csv_buffer.read(),
+    file_options={"content-type": "text/csv"}
+)
+
+print("✅ Clean CSV uploaded to Supabase Storage - insert_food_sales.py:88")
