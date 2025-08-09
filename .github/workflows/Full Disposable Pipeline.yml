@@ -33,7 +33,7 @@ jobs:
 
       - name: Wait for Supabase trigger to refresh disposable_daily_usage
         run: |
-          echo "Waiting for trigger to refresh trigger to refresh disposable_daily_usage"
+          echo "Waiting for trigger to refresh disposable_daily_usage"
           sleep 60
 
       - name: Log Disposable Usage and Update Stock
