@@ -32,7 +32,7 @@ raw_file = supabase.storage.from_(download_bucket).download(INPUT_FILE_NAME)
 
 # ========== STEP 1: CLEAN DATA ==========
 
-df = pd.read_excel(raw_file).dropna().drop_duplicates()
+df = pd.read_excel(BytesIO(raw_file)).dropna().drop_duplicates() # using BytesIO as raw_file is bytes returned from supabase storage
 df[['batch_code', 'item_name']] = df['Item'].str.split(' - ', n=1, expand=True)
 
 df = df[['batch_code', 'item_name', 'Quantity']]
@@ -70,23 +70,41 @@ records = upload_df.to_dict("records")  # For inserting to Supabase
 # ]
 
 
+
 # Step 4: Upload cleaned CSV to Storage
-csv_buffer = BytesIO()
-upload_df.to_csv(csv_buffer, index=False)
-csv_buffer.seek(0)
+upload_df.to_csv(OUTPUT_FILE_NAME, index=False)
 
-supabase.storage.from_(upload_bucket).upload(
-    OUTPUT_FILE_NAME,
-    csv_buffer.read(),
-    file_options={"content-type": "text/csv"}
-)
+# Optional: check file size
+file_size_mb = os.path.getsize(OUTPUT_FILE_NAME) / (1024*1024)
+print(f"Uploading CSV size: {file_size_mb:.2f} MB - insert_food_sales.py:79")
 
-print("✅ Clean CSV uploaded to Supabase Storage - insert_food_sales.py:84")
+with open(OUTPUT_FILE_NAME, "rb") as f:
+    supabase.storage.from_(upload_bucket).upload(
+        OUTPUT_FILE_NAME,
+        f,
+        file_options={"content-type": "text/csv"}
+    )
+
+print("✅ Clean CSV uploaded to Supabase Storage - insert_food_sales.py:88")
+
+
+
+# csv_buffer = BytesIO()
+# upload_df.to_csv(csv_buffer, index=False)
+# csv_buffer.seek(0)
+
+# supabase.storage.from_(upload_bucket).upload(
+#     OUTPUT_FILE_NAME,
+#     csv_buffer.read(),
+#     file_options={"content-type": "text/csv"}
+# )
+
+# print("✅ Clean CSV uploaded to Supabase Storage - insert_food_sales.py:102")
 
 ####################################################################################################################
 
 
 supabase.table("food_sales").insert(records).execute()
 
-print("✅ Data cleaned, matched, and uploaded successfully. - insert_food_sales.py:91")
+print("✅ Data cleaned, matched, and uploaded successfully. - insert_food_sales.py:109")
 
