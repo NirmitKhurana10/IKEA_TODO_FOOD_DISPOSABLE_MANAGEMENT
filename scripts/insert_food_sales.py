@@ -21,7 +21,7 @@ SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 download_bucket = "daily-sales"
-upload_bucket = "clean-food-sales"
+upload_bucket = "clean-daily-sales"
 
 FILE_DATE = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
 
