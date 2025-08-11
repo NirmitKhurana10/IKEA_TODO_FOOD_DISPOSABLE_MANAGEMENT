@@ -1,8 +1,9 @@
-from datetime import timedelta, date
+from datetime import timedelta, datetime
 from supabase import create_client
 import time
 from dotenv import load_dotenv
 import os
+import pytz
 
 
 load_dotenv()
@@ -16,20 +17,21 @@ time.sleep(60)
 usage = supabase.table("disposable_daily_usage").select("*").execute().data
 # print(usage)
 
-yesterday = date.today() - timedelta(days=1)
 
+tz = pytz.timezone("America/Toronto")
+yesterday = (datetime.now(tz) - timedelta(days=1)).date()
+
+
+rows_to_upsert = []
 for entry in usage:
-    disp_id = entry["disposable_id"]
-    used_qty = entry["quantity_used"]
-    disp_name = entry["disposable_name"]
+    rows_to_upsert.append({
+        "log_date": yesterday,
+        "disposable_id": entry["disposable_id"],
+        "quantity_used": entry["quantity_used"],
+        "disposable_name": entry["disposable_name"]
+    })
 
-    supabase.table("disposable_usage_log").insert({
-    "disposable_name":disp_name,
-    "disposable_id": disp_id,
-    "quantity_used": used_qty,
-    "log_date": str(yesterday)
-        }).execute()
-    
+supabase.table("disposable_usage_log").upsert(rows_to_upsert).execute()
     
 # Executing SQL Stored procedure to deduct stock
     

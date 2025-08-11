@@ -31,10 +31,14 @@ jobs:
         run: |
           python scripts/insert_food_sales.py
 
-      - name: Wait for Supabase trigger to refresh disposable_daily_usage
-        run: |
-          echo "Waiting for trigger to refresh disposable_daily_usage"
-          sleep 60
+      - name: Refresh disposable_daily_usage (CONCURRENTLY)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      # - name: Wait for Supabase trigger to refresh disposable_daily_usage
+      #   run: |
+      #     echo "Waiting for trigger to refresh disposable_daily_usage"
+      #     sleep 60
 
       - name: Log Disposable Usage and Update Stock
         env:
