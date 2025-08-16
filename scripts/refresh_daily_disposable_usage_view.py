@@ -12,5 +12,7 @@ supabase = create_client(url, key)
 time.sleep(60)
 try:
     supabase.rpc("refresh_disposable_daily_usage_view").execute()
+    print("✅ Procedure Executed Successfully")
 except Exception as e:
-    print("Error occured while executing - refresh_daily_disposable_usage_view.py:16")
+    print(f"Error occured while executing refresh_daily_disposable_usage_view.py: {e}")
+    

@@ -31,12 +31,12 @@ jobs:
         run: |
           python scripts/insert_food_sales.py
 
-      - name: Refresh disposable_daily_usage (CONCURRENTLY)
+      - name: Execute Refresh disposable_daily_usage procedure
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          -c "REFRESH MATERIALIZED VIEW CONCURRENTLY disposable_daily_usage;"
+          python scripts/refresh_daily_disposable_usage_view.py
 
       # - name: Wait for Supabase trigger to refresh disposable_daily_usage
       #   run: |
