@@ -30,7 +30,7 @@ for entry in usage:
         "quantity_used": entry.get("quantity_used", 0),
         "disposable_name": entry.get("disposable_name")
     })
-supabase.table("disposable_usage_log").upsert(rows_to_upsert, on_conflict="dipsosable_id, log_date").execute()
+supabase.table("disposable_usage_log").upsert(rows_to_upsert, on_conflict="disposable_id, log_date").execute()
     
 # Executing SQL Stored procedure to deduct stock
     
